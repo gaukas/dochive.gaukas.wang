@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="DocHive,Documentation,Archive,Gaukas" />
+  <meta name="author" content="Gaukas Wang" />
+  <meta name="description" content="DocHive = Documentation Archive" />
+  
+  
+  <title>
+    
+      How China Telecom incapacitated TLS Proxies 
+      
+      
+    
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="icon" href="/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat|Roboto:400,400italic,600|Roboto+Mono" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+
+
+  
+
+  
+    
+<link rel="stylesheet" href="/css/post.css">
+
+  
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <a href="/">Gaukas</a>
+</div>
+
+
+      <p class="links">
+  
+    <a title="gaukas.wang" target="" href="https://gaukas.wang">
+      <i class="iconfont icon-home"></i>
+    </a>
+  
+    <a title="github" target="_blank" href="https://github.com/Gaukas">
+      <i class="iconfont icon-github"></i>
+    </a>
+  
+    <a title="email" target="" href="mailto:i@gaukas.wang">
+      <i class="iconfont icon-envelope"></i>
+    </a>
+  
+</p>
+
+
+      <div class="main">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+<!-- LaTex Display -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+
+<div class="post">
+  <h3 class="date">
+    Jun 19, 2019
+  </h3>
+  <h1>
+    How China Telecom incapacitated TLS Proxies
+  </h1>
+  <div class="content markdown-body">
+    <p><em>Prev title: How China Detects and Blocks TLS Proxies</em></p>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>Starting in 2021 June, the Great Firewall, operated by the GOV of CHN, started blocking and interfering with the widely used TLS proxies used by CHN internet users to bypass the well-known internet censorship in CHN. We have found evidence suggesting a hidden reputation system against overseas IPs and exposed a common discrepancy of modern TLS proxy software implementations.</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Starting June 2021, we have seen massive reports indicating TLS proxies started to malfunction in CHN. While many proxy servers got their 443 port timed out in CHN, some other impacted servers still have their accessible HTTPS decoy websites reachable from CHN. This unexpected behavior may indicate that CHN is testing new technology to sabotage TLS proxy without harming normal TLS-based web browsing.</p>
+<p>In this report, we summarized the efforts we put into the investigation of this incident, including our guesses, experiments with their data, verifications tool(s), and our final conclusion.</p>
+<h3 id="Proxy-usage-in-CHN"><a href="#Proxy-usage-in-CHN" class="headerlink" title="Proxy usage in CHN"></a>Proxy usage in CHN</h3><p>It is well known that CHN has the most censored Internet in the world. While most of the Internet users in CHN are still satisfied with their domestic internet ecosystem, there are still many people who try to access various services offered in only other countries. The activity to circumvent the infrastructure-level internet censorship of CHN called the Great Firewall(GFW) is known as Wall-breaking, or Fan-Qiang (翻墙, literally, climb over the wall) in CHN.</p>
+<p>There have been many popular traffic proxying tools or protocols used mostly&#x2F;only for wall-breaking, ranked according to their age:</p>
+<ul>
+<li>OpenVPN</li>
+<li>Shadowsocks&#x2F;ShadowsocksR</li>
+<li>Project V</li>
+<li>XTLS</li>
+<li>Trojan-GFW&#x2F;Trojan-Go</li>
+</ul>
+<p>And just as new wall-breaking tools emerges in China, GFW adapts to attack the latest popular circumventions.</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>The attack started with being observable regionally and quickly spreads to nationwide in CHN. Only Internet users routing via <strong>AS4134 CHINANET-BACKBONE</strong>, which are majorly China Telecom users, were impacted by this incident. Hosts that does not route through AS4134 were not impacted.</p>
+<p>Many of self-reported cases claimed that the attack is targetting only the TLS Proxying behavior, leaving the normal HTTPS web browsing unharmed. If this is true, then such discriminating behavior could be an indication of the GFW being able to identify TLS proxy traffic from HTTP traffic, which directly threatens the safety of TLS proxy users. </p>
+<p>Popular TLS proxies are usually designed be detection-resistant with the replay-attack being disabled by TLS itself and a fallback behavior for those who failed to authenticate as a proxy user. However, even TLS connections could be fingerprinted and be discriminated based on that. According to <a target="_blank" rel="noopener" href="https://tlsfingerprint.io/">tlsfingerprint.io</a>, the TLS ClientHello messages are not random at all. And Censor could be discriminating many other factors, such as negotiated ALPN, SNI value, etc. </p>
+<h2 id="Threat-Model"><a href="#Threat-Model" class="headerlink" title="Threat Model"></a>Threat Model</h2><p>In the first experiment we attempted to examine the discrimination on TLS proxy servers versus on HTTPS protocol which serves websites over TLS. The client will connects to the same TLS server as a proxy user (with application layer authentication) and as an HTTPS visitor (without application layer authentication), with <em>tcpdump</em> being used to capture packets on wire. </p>
+<h3 id="The-attack-against-TLS-proxy"><a href="#The-attack-against-TLS-proxy" class="headerlink" title="The attack against TLS proxy"></a>The attack against TLS proxy</h3><p>On the test node simulating a Chinese TLS proxy client, in pcap we observed massive amount TLS handshake failures caused by <em>RST</em> packets. We believe it prevented TLS proxy from working correctly. </p>
+<p>On the TLS proxy server the test node connects to, we observed no abnormal traffic.</p>
+<h3 id="The-attack-against-HTTPS-protocol"><a href="#The-attack-against-HTTPS-protocol" class="headerlink" title="The attack against HTTPS protocol"></a>The attack against HTTPS protocol</h3><p>On the test node simulating a Chinese HTTPS client, in pcap we observed effectively the same amount of TLS handshake failures caused by <em>RST</em> packets. We believe it should effectively prevent HTTPS protocol from working correctly, even though such behavior is not reported by web browser users. </p>
+<h3 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h3><p>Thus we have confirmed that the attack is not discriminating TLS proxy traffic among all other HTTPS traffic. But instead, a major design discrepancy in between TLS proxy applications and web browsers caused the inconsistent user experience. Specifically when examining the attack against, on average we observed more than one ClientHello message being transmitted per HTTPS server we connected to. We would explain this behavior as an automatic retry after failed TLS handshake caused by <em>RST</em>. On the other hand, TLS proxy clients do not implement this retry mechanism but instead will fail immediately upon <em>RST</em> being received. </p>
+<h2 id="Other-evaluations"><a href="#Other-evaluations" class="headerlink" title="Other evaluations"></a>Other evaluations</h2><p>In addition we evaluated the potential impact of other fingerprintable TLS factors on TLS handshake successful rates, among many target hosts running TLS proxy&#x2F;web servers.</p>
+<h3 id="TLS-ClientHello-fingerprint"><a href="#TLS-ClientHello-fingerprint" class="headerlink" title="TLS ClientHello fingerprint"></a>TLS ClientHello fingerprint</h3><table>
+<thead>
+<tr>
+<th align="center"><img src="/images/china-tls/clienthello.png" alt="clienthello"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Fig 1. various targets(hosts) with various popular TLS ClientHello Messages</td>
+</tr>
+</tbody></table>
+<p>The data does not show an indication of ClientHello-fingerprint-based discrimination.</p>
+<h3 id="Negotiated-ALPN"><a href="#Negotiated-ALPN" class="headerlink" title="Negotiated ALPN"></a>Negotiated ALPN</h3><table>
+<thead>
+<tr>
+<th align="center"><img src="/images/china-tls/alpn.png" alt="alpn"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Fig 2. various negotiatede ALPN with various popular TLS ClientHello Messages</td>
+</tr>
+</tbody></table>
+<p>The data does not show an indication of negotiated-ALPN-based discrimination.</p>
+<h3 id="SNI"><a href="#SNI" class="headerlink" title="SNI"></a>SNI</h3><table>
+<thead>
+<tr>
+<th align="center"><img src="/images/china-tls/sni.png" alt="alpn"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Fig 3. various SNI&#x2F;Hostnames</td>
+</tr>
+</tbody></table>
+<p>The data does not show an indication of SNI or Hostname-based discrimination.</p>
+<h3 id="IP-address-reputations"><a href="#IP-address-reputations" class="headerlink" title="IP address reputations"></a>IP address reputations</h3><p>Also, according to the data we showed in Fig 1, the attack strength varies across different TLS servers, which might indicate that this attack is based on a hidden IP reputation system. The reputation rating factor is yet known.</p>
+<h2 id="Conclusions"><a href="#Conclusions" class="headerlink" title="Conclusions"></a>Conclusions</h2><p>Our research shows:</p>
+<ul>
+<li>GFW does not demonstrate an ability to identify TLS proxy traffics out of normal HTTPS traffics in real-time.</li>
+<li>GFW isn’t utilizing a discrimination based on ClientHello&#x2F;ALPN&#x2F;SNI used for TLS handshake in real-time.</li>
+<li>Statistics shows a strong indication towards a hidden IP reputation system. </li>
+<li>TLS Proxy clients who does not retry on receiving <em>RST</em> is vulnerable to this kind of random <em>RST</em> injection attack.</li>
+</ul>
+<h2 id="Credits"><a href="#Credits" class="headerlink" title="Credits"></a>Credits</h2><p>My advisor, Professor <a target="_blank" rel="noopener" href="https://www.colorado.edu/ecee/eric-wustrow">Eric Wustrow</a> at University of Colorado Boulder</p>
+<p>Professor <a target="_blank" rel="noopener" href="https://eecs.engin.umich.edu/people/halderman-j-alex/">J. Alex Halderman</a> at University of Michigan</p>
+<p><a target="_blank" rel="noopener" href="https://scholar.google.com/citations?user=iHnZESwAAAAJ&hl=en">Jack Wampler</a> at University of Colorado Boulder</p>
+<p>And everyone else from <a target="_blank" rel="noopener" href="https://refraction.network/">Refraction Networking</a> who withstood my spamming</p>
+<p>Software Tool used during this project:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/refraction-networking/utls">refraction-networking&#x2F;utls</a></li>
+<li><a target="_blank" rel="noopener" href="https://tlsfingerprint.io/">tlsfingerprint.io</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.tcpdump.org/">tcpdump</a></li>
+</ul>
+<h2 id="Appendix"><a href="#Appendix" class="headerlink" title="Appendix"></a>Appendix</h2><h3 id="Artifact"><a href="#Artifact" class="headerlink" title="Artifact"></a>Artifact</h3><p>the source code of the attack verification tool is published on GitHub: <a target="_blank" rel="noopener" href="https://github.com/Gaukas/GFW-2021Summer-TLS-RST-Incident">https://github.com/Gaukas/GFW-2021Summer-TLS-RST-Incident</a> </p>
+<ul>
+<li>Due to this attack is now inactive, you may not be able to get observation supporting my data.</li>
+</ul>
+<h3 id="Incident-timeline"><a href="#Incident-timeline" class="headerlink" title="Incident timeline"></a>Incident timeline</h3><p>Updated 7&#x2F;28&#x2F;2021 16:00 UTC:</p>
+<p>The attack is no longer observable on any server for several days. We are now concluding the case and moving on.</p>
+<p>Updated 7&#x2F;23&#x2F;2021 16:30 UTC:</p>
+<p>The attack is again observable ONLY on one server I have control over. Besides, a minor timeout problem appears on all targets.</p>
+<p>And no sign of server-side ALPN discrimination.</p>
+<p>Updated 7&#x2F;23&#x2F;2021 00:33 UTC:</p>
+<p>The attack is still inactive.</p>
+<p>Internet discussion indicates this attack is:</p>
+<ul>
+<li>Limited to AS 4134 CHINANET-BACKBONE (in contradictory to CN2 AS4809).</li>
+<li>Bidirectional (the client, no matter a Chinese IP or a foreign IP, receives RST)</li>
+</ul>
+<p>The ASN relation matches our data, where our only good IP is also the only server we have enforcing AS4809 routing.</p>
+<p>We did not get a chance to verify the statement of Bidirectional behavior.</p>
+<p>Updated 7&#x2F;22&#x2F;2021 18:36 UTC:<br>The attack is no longer active. I will keep an eye on it for the next 48 hours.</p>
+<p>Updated 7&#x2F;22&#x2F;2021 00:00 UTC:<br>Thanks to Prof. Halderman and Jack, I checked the SNI. Sadly no strong evidence for SNI sniffing.</p>
+<p>Updated 7&#x2F;21&#x2F;2021 00:00 UTC:<br>I have published the experimenting tool I used to check&#x2F;confirm the attack on GitHub:</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Gaukas/GFW-2021Summer-TLS-Proxy-Attack">https://github.com/Gaukas/GFW-2021Summer-TLS-Proxy-Attack</a></p>
+<p>Latency (ping) in ms from test node to all targets, in the same order:<br>65, 69, 93, 191, 63, 199, 131, 133</p>
+<p>Packet loss, in the same order:<br>8%, 12%, 2%, 0%, 0%, 0%, 0%, 0%</p>
+<p>According to the data we collected today, there is no sign of a strong correlation between TLS Fingerprints (from ClientHello) and TLS handshake successful rates. Instead, there is a strong sign of a hidden IP reputation system within the GFW. By utilizing the Reputation System, GFW could selectively attack different servers with different intensities.</p>
+<p>Original Post 7&#x2F;20&#x2F;2021 00:00 UTC:<br>Our first guess was TLS Fingerprint-based attack. Thanks to the project TLSFingerprint.io, we exploited that different TLS clients may initialize the TLS connection with noticeable differences which is enough to categorize the users. If a TLS proxy client uses some unpopular fingerprints, the request made by such client would be very easy to be separated from normal browser-based HTTPS requests.</p>
+<p>By collecting enough fingerprints from variant TLS proxy client implementations, we found that most of the popular TLS proxy clients use minor TLS fingerprints which is vulnerable to the attack we imagined. The only exception is the XTLS&#x2F;Xray-core, which in their release v1.4.2, they have noticed and fixed the TLS fingerprinting vulnerability (big thanks to uTLS) by forging the major browsers’ fingerprints. However, even with Xray-core in use, the TLS proxies are still unavailable. But so far at least we can say GFW isn’t utilizing the fingerprint-based attack in real-time.</p>
+<p>After I set up a test node in China in order to do some PCAP, I see strange things happening:</p>
+<p>Google Chrome also had a difficult time connecting to the decoy sites. It keeps changing the fingerprints used for the handshake and the first time I try to connect, 3 different fingerprints with 6 ClientHello messages were involved.<br>cURL requests to decoy sites are suffering from SSL handshake failure due to connection reset.<br>TLS proxy requests are not guaranteed to fail. Still can see some successful requests.<br>This has been interesting. By expanding the experiments, I found that more than half of the TLS handshake to the proxy server under attack would experience <em>RST</em> before the handshake completes. As a rough conclusion: GFW does not show the ability to identify TLS proxy traffics from normal HTTPS traffics in real-time.</p>
+
+  </div>
+  
+    
+      <a id="older" class="blog-nav" href="/2019/shadowsocks-manyuser-windows-server-2016/">OLDER&nbsp;&gt;</a>
+      
+        
+          <a id="newer" class="blog-nav" href="/2019/shadowsocks-manyuser-centos8/">&lt;&nbsp;NEWER</a>
+          
+            
+</div>
+        <div class="footer">
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/leedom92/hexo-theme-leedom">Copyright © Gaukas Wang under <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a></a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="back-to-top hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+      
+  <div class="search-icon" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-box">
+        <div class="search-title">
+          <!-- <span class="search-icon-input">
+            <a href="javascript: void(0)">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </span> -->
+          
+            <input type="text" class="search-input" id="search-input" placeholder="$ grep...">
+          
+          <span class="search-close-icon" id="search-close-icon">
+            <a href="javascript: void(0)">
+              <i class="iconfont icon-close"></i>
+            </a>
+          </span>
+        </div>
+        <div class="search-result" id="search-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    // inputArea.onclick = function() {
+    //   getSearchFile()
+    //   this.onclick = null
+    // }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        inputArea.focus()
+        getSearchFile()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'><span></ul>";
+      // $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='/" + data_url + "' class='search-result-title'><h2>" + orig_data_title + "</h2></a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<h3 class=\"search-result-abstract\">" + match_content + "...</h3>"
+                }
+                str += "<hr></li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/leedom92/hexo-theme-leedom#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+    </div>
+  </body>
+</html>
