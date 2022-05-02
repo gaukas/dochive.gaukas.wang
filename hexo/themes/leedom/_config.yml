@@ -17,7 +17,7 @@ favicon:
 # 用户头像与昵称
 avatar:
   author_photo: /images/avatar.jpg
-  author_nickname: Gaukas
+  author_nickname: DocHive
   path: /
 
 # 文章末尾的上一页与下一页
