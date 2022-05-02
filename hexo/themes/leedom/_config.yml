@@ -1,0 +1,56 @@
+# 相关配置说明
+  # favicon: 网站图标
+  # avatar: 主题用户头像与昵称
+  # rss: rss订阅
+  # prevnext: 文章末尾的上一页与下一页
+  # footer: 页脚信息
+  # search: 文章搜索
+
+# enable: 是否开启相应功能，可选true || false
+
+# 网站图标
+favicon:
+  enable: true
+  icon: /favicon.png
+  touch_icon: /favicon.png
+
+# 用户头像与昵称
+avatar:
+  author_photo: /images/avatar.jpg
+  author_nickname: Gaukas
+  path: /
+
+# 文章末尾的上一页与下一页
+prevnext:
+  enable: true
+
+# 链接信息
+link: 
+  # name: 名称
+  # icon: 图标，目前仅支持IconFont部分图标
+  # path: 地址
+  # target: 跳转方式
+  -
+    name: gaukas.wang
+    icon: home
+    path: https://gaukas.wang
+  -
+    name: github
+    icon: github
+    path: https://github.com/Gaukas
+    target: _blank
+  -
+    name: email
+    icon: envelope
+    path: mailto:i@gaukas.wang
+
+# 页脚信息
+footer:
+  -
+    name: Copyright © Gaukas Wang under <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+    path: https://github.com/leedom92/hexo-theme-leedom
+
+# 文章搜索
+search:
+  enable: true
+  placeholder: 
