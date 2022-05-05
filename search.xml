@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>Secure your SSH key with a FIDO2 Authenticator</title>
+      <link href="/2022/ssh-fido2/"/>
+      <url>/2022/ssh-fido2/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h2><ul><li><strong>OpenSSH 8.2p1</strong> or later</li><li>A FIDO2 Authenticator</li><li>For Windows operating system user, always run your terminal in Admin Mode*</li></ul><p>* For unknown reason, <a href="https://github.com/PowerShell/Win32-OpenSSH/releases">Win32-OpenSSH</a> up to <strong>V8.9.1.0p1-Beta</strong> won’t function correctly without running in Admin Mode. </p><p>In this tutorial, I am using a YubiKey 5C NFC as my FIDO2 Authenticator</p><h2 id="Discoverable-Key"><a href="#Discoverable-Key" class="headerlink" title="Discoverable Key"></a>Discoverable Key</h2><h3 id="Generate-Key"><a href="#Generate-Key" class="headerlink" title="Generate Key"></a>Generate Key</h3><p>You may create your key pair with the steps below:</p><ol><li><p>Connect your FIDO2 Authenticator</p></li><li><p>Run command in Terminal to generate a <strong>discoverable key</strong></p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t [key-type] -O resident -O application=ssh:YourFancyKeyNameHere -O verify-required</span><br></pre></td></tr></table></figure><p><code>[key-type]</code> could be either <code>ecdsa-sk</code> or <code>ed25519-sk</code> <br><br><code>-O application=ssh:YourFancyKeyNameHere</code> names the resident key (optional) <br><br><code>-O verify-required</code> will require the PIN for the FIDO2 Authenticator when authenticating with the SSH key generated (optional) <br><br>Add <code>-O no-touch-required</code> then you don’t need to touch your Authenticator (therefore skipping the user presence check)</p></li><li><p>SSH will prompt for the PIN and verify the user presence correspondingly if needed</p></li><li><p>Your public and private key will be then generated. Rename the private key to <code>id_ecdsa_sk</code> or <code>id_ed25519_sk</code> to make sure your system picks it up automatically.</p></li></ol><h3 id="Use-your-key-with-FIDO2-Authenticator-on-a-new-local-machine"><a href="#Use-your-key-with-FIDO2-Authenticator-on-a-new-local-machine" class="headerlink" title="Use your key with FIDO2 Authenticator on a new local machine"></a>Use your key with FIDO2 Authenticator on a new local machine</h3><p>You may safely carry your key pairs in your FIDO2 Authenticator to other devices.</p><p>On a new local machine, use steps below to setup key pairs:</p><ol><li>Export key pair from FIDO2 Authenticator<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -K</span><br></pre></td></tr></table></figure></li><li>SSH will prompt for PIN and&#x2F;or user presence. Pay attention to your authenticator as on some systems there might be no literal indication when user presence is required.</li><li>Rename the private key to <code>id_ecdsa_sk</code> or <code>id_ed25519_sk</code> to make sure your system picks it up automatically.</li></ol><h3 id="Install-your-public-key-to-a-remote-server"><a href="#Install-your-public-key-to-a-remote-server" class="headerlink" title="Install your public key to a remote server"></a>Install your public key to a remote server</h3><p>There’s no difference from how you do it on other key types. Just append your public key to the end of <code>~/.ssh/authorized_keys</code>, start on a new line.</p><h3 id="Advantages"><a href="#Advantages" class="headerlink" title="Advantages"></a>Advantages</h3><p>With this you can securely install your private key on a untrusted system. And the exportable key feature makes it easier to carry your keys. </p><h2 id="Yubikey-Manage-your-resident-keys"><a href="#Yubikey-Manage-your-resident-keys" class="headerlink" title="Yubikey: Manage your resident keys"></a>Yubikey: Manage your resident keys</h2><p>Download and install <code>ykman</code>.</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./ykman fido credentials list # list all resident keys</span><br><span class="line">./ykman fido credentials delete ABCDEFGHIJKLMN # delete key identified by ABCDEFGHIJKLMN </span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+          <category> devops </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> fido2 </tag>
+            
+            <tag> ssh </tag>
+            
+            <tag> ed25519 </tag>
+            
+            <tag> ecdsa </tag>
+            
+            <tag> yubikey </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>How China Telecom incapacitated TLS Proxies</title>
+      <link href="/2021/china-tls-proxy-2021/"/>
+      <url>/2021/china-tls-proxy-2021/</url>
+      
+        <content type="html"><![CDATA[<p><em>Prev title: How China Detects and Blocks TLS Proxies</em></p><h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>Starting in 2021 June, the Great Firewall, operated by the GOV of CHN, started blocking and interfering with the widely used TLS proxies used by CHN internet users to bypass the well-known internet censorship in CHN. We have found evidence suggesting a hidden reputation system against overseas IPs and exposed a common discrepancy of modern TLS proxy software implementations.</p><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Starting June 2021, we have seen massive reports indicating TLS proxies started to malfunction in CHN. While many proxy servers got their 443 port timed out in CHN, some other impacted servers still have their accessible HTTPS decoy websites reachable from CHN. This unexpected behavior may indicate that CHN is testing new technology to sabotage TLS proxy without harming normal TLS-based web browsing.</p><p>In this report, we summarized the efforts we put into the investigation of this incident, including our guesses, experiments with their data, verifications tool(s), and our final conclusion.</p><h3 id="Proxy-usage-in-CHN"><a href="#Proxy-usage-in-CHN" class="headerlink" title="Proxy usage in CHN"></a>Proxy usage in CHN</h3><p>It is well known that CHN has the most censored Internet in the world. While most of the Internet users in CHN are still satisfied with their domestic internet ecosystem, there are still many people who try to access various services offered in only other countries. The activity to circumvent the infrastructure-level internet censorship of CHN called the Great Firewall(GFW) is known as Wall-breaking, or Fan-Qiang (翻墙, literally, climb over the wall) in CHN.</p><p>There have been many popular traffic proxying tools or protocols used mostly&#x2F;only for wall-breaking, ranked according to their age:</p><ul><li>OpenVPN</li><li>Shadowsocks&#x2F;ShadowsocksR</li><li>Project V</li><li>XTLS</li><li>Trojan-GFW&#x2F;Trojan-Go</li></ul><p>And just as new wall-breaking tools emerges in China, GFW adapts to attack the latest popular circumventions.</p><h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>The attack started with being observable regionally and quickly spreads to nationwide in CHN. Only Internet users routing via <strong>AS4134 CHINANET-BACKBONE</strong>, which are majorly China Telecom users, were impacted by this incident. Hosts that does not route through AS4134 were not impacted.</p><p>Many of self-reported cases claimed that the attack is targetting only the TLS Proxying behavior, leaving the normal HTTPS web browsing unharmed. If this is true, then such discriminating behavior could be an indication of the GFW being able to identify TLS proxy traffic from HTTP traffic, which directly threatens the safety of TLS proxy users. </p><p>Popular TLS proxies are usually designed be detection-resistant with the replay-attack being disabled by TLS itself and a fallback behavior for those who failed to authenticate as a proxy user. However, even TLS connections could be fingerprinted and be discriminated based on that. According to <a href="https://tlsfingerprint.io/">tlsfingerprint.io</a>, the TLS ClientHello messages are not random at all. And Censor could be discriminating many other factors, such as negotiated ALPN, SNI value, etc. </p><h2 id="Threat-Model"><a href="#Threat-Model" class="headerlink" title="Threat Model"></a>Threat Model</h2><p>In the first experiment we attempted to examine the discrimination on TLS proxy servers versus on HTTPS protocol which serves websites over TLS. The client will connects to the same TLS server as a proxy user (with application layer authentication) and as an HTTPS visitor (without application layer authentication), with <em>tcpdump</em> being used to capture packets on wire. </p><h3 id="The-attack-against-TLS-proxy"><a href="#The-attack-against-TLS-proxy" class="headerlink" title="The attack against TLS proxy"></a>The attack against TLS proxy</h3><p>On the test node simulating a Chinese TLS proxy client, in pcap we observed massive amount TLS handshake failures caused by <em>RST</em> packets. We believe it prevented TLS proxy from working correctly. </p><p>On the TLS proxy server the test node connects to, we observed no abnormal traffic.</p><h3 id="The-attack-against-HTTPS-protocol"><a href="#The-attack-against-HTTPS-protocol" class="headerlink" title="The attack against HTTPS protocol"></a>The attack against HTTPS protocol</h3><p>On the test node simulating a Chinese HTTPS client, in pcap we observed effectively the same amount of TLS handshake failures caused by <em>RST</em> packets. We believe it should effectively prevent HTTPS protocol from working correctly, even though such behavior is not reported by web browser users. </p><h3 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h3><p>Thus we have confirmed that the attack is not discriminating TLS proxy traffic among all other HTTPS traffic. But instead, a major design discrepancy in between TLS proxy applications and web browsers caused the inconsistent user experience. Specifically when examining the attack against, on average we observed more than one ClientHello message being transmitted per HTTPS server we connected to. We would explain this behavior as an automatic retry after failed TLS handshake caused by <em>RST</em>. On the other hand, TLS proxy clients do not implement this retry mechanism but instead will fail immediately upon <em>RST</em> being received. </p><h2 id="Other-evaluations"><a href="#Other-evaluations" class="headerlink" title="Other evaluations"></a>Other evaluations</h2><p>In addition we evaluated the potential impact of other fingerprintable TLS factors on TLS handshake successful rates, among many target hosts running TLS proxy&#x2F;web servers.</p><h3 id="TLS-ClientHello-fingerprint"><a href="#TLS-ClientHello-fingerprint" class="headerlink" title="TLS ClientHello fingerprint"></a>TLS ClientHello fingerprint</h3><table><thead><tr><th align="center"><img src="/images/china-tls/clienthello.png" alt="clienthello"></th></tr></thead><tbody><tr><td align="center">Fig 1. various targets(hosts) with various popular TLS ClientHello Messages</td></tr></tbody></table><p>The data does not show an indication of ClientHello-fingerprint-based discrimination.</p><h3 id="Negotiated-ALPN"><a href="#Negotiated-ALPN" class="headerlink" title="Negotiated ALPN"></a>Negotiated ALPN</h3><table><thead><tr><th align="center"><img src="/images/china-tls/alpn.png" alt="alpn"></th></tr></thead><tbody><tr><td align="center">Fig 2. various negotiatede ALPN with various popular TLS ClientHello Messages</td></tr></tbody></table><p>The data does not show an indication of negotiated-ALPN-based discrimination.</p><h3 id="SNI"><a href="#SNI" class="headerlink" title="SNI"></a>SNI</h3><table><thead><tr><th align="center"><img src="/images/china-tls/sni.png" alt="alpn"></th></tr></thead><tbody><tr><td align="center">Fig 3. various SNI&#x2F;Hostnames</td></tr></tbody></table><p>The data does not show an indication of SNI or Hostname-based discrimination.</p><h3 id="IP-address-reputations"><a href="#IP-address-reputations" class="headerlink" title="IP address reputations"></a>IP address reputations</h3><p>Also, according to the data we showed in Fig 1, the attack strength varies across different TLS servers, which might indicate that this attack is based on a hidden IP reputation system. The reputation rating factor is yet known.</p><h2 id="Conclusions"><a href="#Conclusions" class="headerlink" title="Conclusions"></a>Conclusions</h2><p>Our research shows:</p><ul><li>GFW does not demonstrate an ability to identify TLS proxy traffics out of normal HTTPS traffics in real-time.</li><li>GFW isn’t utilizing a discrimination based on ClientHello&#x2F;ALPN&#x2F;SNI used for TLS handshake in real-time.</li><li>Statistics shows a strong indication towards a hidden IP reputation system. </li><li>TLS Proxy clients who does not retry on receiving <em>RST</em> is vulnerable to this kind of random <em>RST</em> injection attack.</li></ul><h2 id="Credits"><a href="#Credits" class="headerlink" title="Credits"></a>Credits</h2><p>My advisor, Professor <a href="https://www.colorado.edu/ecee/eric-wustrow">Eric Wustrow</a> at University of Colorado Boulder</p><p>Professor <a href="https://eecs.engin.umich.edu/people/halderman-j-alex/">J. Alex Halderman</a> at University of Michigan</p><p><a href="https://scholar.google.com/citations?user=iHnZESwAAAAJ&hl=en">Jack Wampler</a> at University of Colorado Boulder</p><p>And everyone else from <a href="https://refraction.network/">Refraction Networking</a> who withstood my spamming</p><p>Software Tool used during this project:</p><ul><li><a href="https://github.com/refraction-networking/utls">refraction-networking&#x2F;utls</a></li><li><a href="https://tlsfingerprint.io/">tlsfingerprint.io</a></li><li><a href="https://www.tcpdump.org/">tcpdump</a></li></ul><h2 id="Appendix"><a href="#Appendix" class="headerlink" title="Appendix"></a>Appendix</h2><h3 id="Artifact"><a href="#Artifact" class="headerlink" title="Artifact"></a>Artifact</h3><p>the source code of the attack verification tool is published on GitHub: <a href="https://github.com/Gaukas/GFW-2021Summer-TLS-RST-Incident">https://github.com/Gaukas/GFW-2021Summer-TLS-RST-Incident</a> </p><ul><li>Due to this attack is now inactive, you may not be able to get observation supporting my data.</li></ul><h3 id="Incident-timeline"><a href="#Incident-timeline" class="headerlink" title="Incident timeline"></a>Incident timeline</h3><p>Updated 7&#x2F;28&#x2F;2021 16:00 UTC:</p><p>The attack is no longer observable on any server for several days. We are now concluding the case and moving on.</p><p>Updated 7&#x2F;23&#x2F;2021 16:30 UTC:</p><p>The attack is again observable ONLY on one server I have control over. Besides, a minor timeout problem appears on all targets.</p><p>And no sign of server-side ALPN discrimination.</p><p>Updated 7&#x2F;23&#x2F;2021 00:33 UTC:</p><p>The attack is still inactive.</p><p>Internet discussion indicates this attack is:</p><ul><li>Limited to AS 4134 CHINANET-BACKBONE (in contradictory to CN2 AS4809).</li><li>Bidirectional (the client, no matter a Chinese IP or a foreign IP, receives RST)</li></ul><p>The ASN relation matches our data, where our only good IP is also the only server we have enforcing AS4809 routing.</p><p>We did not get a chance to verify the statement of Bidirectional behavior.</p><p>Updated 7&#x2F;22&#x2F;2021 18:36 UTC:<br>The attack is no longer active. I will keep an eye on it for the next 48 hours.</p><p>Updated 7&#x2F;22&#x2F;2021 00:00 UTC:<br>Thanks to Prof. Halderman and Jack, I checked the SNI. Sadly no strong evidence for SNI sniffing.</p><p>Updated 7&#x2F;21&#x2F;2021 00:00 UTC:<br>I have published the experimenting tool I used to check&#x2F;confirm the attack on GitHub:</p><p><a href="https://github.com/Gaukas/GFW-2021Summer-TLS-Proxy-Attack">https://github.com/Gaukas/GFW-2021Summer-TLS-Proxy-Attack</a></p><p>Latency (ping) in ms from test node to all targets, in the same order:<br>65, 69, 93, 191, 63, 199, 131, 133</p><p>Packet loss, in the same order:<br>8%, 12%, 2%, 0%, 0%, 0%, 0%, 0%</p><p>According to the data we collected today, there is no sign of a strong correlation between TLS Fingerprints (from ClientHello) and TLS handshake successful rates. Instead, there is a strong sign of a hidden IP reputation system within the GFW. By utilizing the Reputation System, GFW could selectively attack different servers with different intensities.</p><p>Original Post 7&#x2F;20&#x2F;2021 00:00 UTC:<br>Our first guess was TLS Fingerprint-based attack. Thanks to the project TLSFingerprint.io, we exploited that different TLS clients may initialize the TLS connection with noticeable differences which is enough to categorize the users. If a TLS proxy client uses some unpopular fingerprints, the request made by such client would be very easy to be separated from normal browser-based HTTPS requests.</p><p>By collecting enough fingerprints from variant TLS proxy client implementations, we found that most of the popular TLS proxy clients use minor TLS fingerprints which is vulnerable to the attack we imagined. The only exception is the XTLS&#x2F;Xray-core, which in their release v1.4.2, they have noticed and fixed the TLS fingerprinting vulnerability (big thanks to uTLS) by forging the major browsers’ fingerprints. However, even with Xray-core in use, the TLS proxies are still unavailable. But so far at least we can say GFW isn’t utilizing the fingerprint-based attack in real-time.</p><p>After I set up a test node in China in order to do some PCAP, I see strange things happening:</p><p>Google Chrome also had a difficult time connecting to the decoy sites. It keeps changing the fingerprints used for the handshake and the first time I try to connect, 3 different fingerprints with 6 ClientHello messages were involved.<br>cURL requests to decoy sites are suffering from SSL handshake failure due to connection reset.<br>TLS proxy requests are not guaranteed to fail. Still can see some successful requests.<br>This has been interesting. By expanding the experiments, I found that more than half of the TLS handshake to the proxy server under attack would experience <em>RST</em> before the handshake completes. As a rough conclusion: GFW does not show the ability to identify TLS proxy traffics from normal HTTPS traffics in real-time.</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> reports </category>
+          
+          <category> security </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> china </tag>
+            
+            <tag> tls </tag>
+            
+            <tag> proxy </tag>
+            
+            <tag> censorship </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Shadowsocks-manyuser on CentOS 8</title>
+      <link href="/2019/shadowsocks-manyuser-centos8/"/>
+      <url>/2019/shadowsocks-manyuser-centos8/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Install-Dependencies"><a href="#Install-Dependencies" class="headerlink" title="Install Dependencies"></a>Install Dependencies</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install</span><br><span class="line">wget python27 gcc swig openssl-devel redhat-rpm-config python2-devel tar make git</span><br></pre></td></tr></table></figure><p>Note that on CentOS 8, install by yum with one calling may not work as expected. Please double check to make sure you have everything listed installed.</p><h2 id="Install-pip-and-something-should-be-installed-by-pip"><a href="#Install-pip-and-something-should-be-installed-by-pip" class="headerlink" title="Install pip and something should be installed by pip"></a>Install pip and something should be installed by pip</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://bootstrap.pypa.io/get-pip.py</span><br><span class="line">python2 get-pip.py</span><br><span class="line">pip install pyparsing</span><br><span class="line">pip install cymysql</span><br><span class="line">pip install m2crypto</span><br></pre></td></tr></table></figure><h2 id="Optional-Install-libsodium-To-support-CHACHA20-encryption"><a href="#Optional-Install-libsodium-To-support-CHACHA20-encryption" class="headerlink" title="Optional: Install libsodium (To support CHACHA20 encryption)"></a>Optional: Install libsodium (To support CHACHA20 encryption)</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># Download, Unzip, Compile and Install</span><br><span class="line">wget -N --no-check-certificate https://download.libsodium.org/libsodium/releases/LATEST.tar.gz </span><br><span class="line">tar zvxf LATEST.tar.gz </span><br><span class="line">cd libsodium-* </span><br><span class="line">./configure </span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"># Add link to system library</span><br><span class="line">echo &quot;/usr/local/lib&quot; &gt;&gt; /etc/ld.so.conf</span><br><span class="line">ldconfig </span><br><span class="line"># Expect no output info. Otherwise something went wrong</span><br></pre></td></tr></table></figure><h2 id="Installation-and-configuration-of-Shadowsocks-manyuser"><a href="#Installation-and-configuration-of-Shadowsocks-manyuser" class="headerlink" title="Installation and configuration of Shadowsocks-manyuser"></a>Installation and configuration of Shadowsocks-manyuser</h2><p>Thanks to Clowwindy, Mengskysama and all the other developers for making this project possible.</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git clone -b manyuser https://github.com/mengskysama/shadowsocks-rm.git</span><br><span class="line">cd shadowsocks-rm/shadowsocks/ # Enter the directory</span><br><span class="line">vi config.py # Edit configuration file</span><br><span class="line">Run Shadowsocks-manyuser</span><br><span class="line">python2 servers.py # In the directory, call by hand. </span><br><span class="line">/usr/bin/python2 &#123;DIRECTORY&#125;/shadowsocks-rm/shadowsocks/servers.py # Full path might be needed</span><br></pre></td></tr></table></figure><p>Also, glad to see CentOS 8.</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+          <category> devops </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> libsodium </tag>
+            
+            <tag> chacha20 </tag>
+            
+            <tag> salsa20 </tag>
+            
+            <tag> tutorial </tag>
+            
+            <tag> linux </tag>
+            
+            <tag> proxy </tag>
+            
+            <tag> shadowsocks </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Shadowsocks-Manyuser on Windows Server 2016</title>
+      <link href="/2019/shadowsocks-manyuser-windows-server-2016/"/>
+      <url>/2019/shadowsocks-manyuser-windows-server-2016/</url>
+      
+        <content type="html"><![CDATA[<p>I could not found any fully viable tutorial on the internet. Most of them seem viable but not(Even the one posted by the project’s official GitHub account!). The troubleshooting is dirty and not helpful at all. So here comes this tutorial, which could be your reference.</p><p>First, you must know what you want: You want a Shadowsocks multi-user server on Windows Server 2016. You should have a good reason for doing this, I recommend you switch to CentOS or Ubuntu otherwise. Windows Servers aren’t that efficient for just hosting services. By the way, this tutorial is for x86_64 platform. If you are using x86, make corresponding changes like downloading pack for win32&#x2F;x86 and so on.</p><p>Download (here) and install Python 2.7.x. Windows x86-64 MSI installer would be your best choice. Be sure to install pip! Then you will need to download (here) and install M2Crypto for your platform.</p><p>Next, go get OpenSSL for Win. DOWNLOAD AND INSTALL LATEST VC++ REDIST IF YOU HAVEN’T. Win64 OpenSSL v1.1.1c Light (MSI) would help a lot. (Someone says we should use 1.0.2, but I didn’t find the required DLLs in 1.0.2, sad.)</p><p>After that, go to the installation directory of OpenSSL and get the <strong>libcrypto***.dll</strong> and <strong>libssl***.dll</strong>, copy them to your python’s installation directory&#x2F;Scripts&#x2F; and rename them to exact libcrypto.dll and libssl.dll.</p><p>Then we should install required pip module:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install pyparsing</span><br><span class="line">pip install cymysql</span><br></pre></td></tr></table></figure><p>Now download (here) and unzip Shadowsocks-Manyuser. After unzip, you will find the &#x2F;shadowsocks-rm-master&#x2F;shadowsocks&#x2F; folder, which is the only folder you need. In it, there’s config.py to store the configuration of your server.</p><p>If you start your server by running .&#x2F;shadowsocks&#x2F;servers.py now, you should see the error of libcrypto.EVP_CIPHER_CTX_cleanup not found. This function has been removed 🙁 But there’s a quick fix: Edit .&#x2F;shadowsocks&#x2F;crypto&#x2F;openssl.py and change <code>libcrypto.EVP_CIPHER_CTX_cleanup</code> to <code>libcrypto.EVP_CIPHER_CTX_reset</code> (2 occurrences in total).</p><p>And… If you want to use CHACHA20, it is possible even on Windows!<br>Go to <a href="https://download.libsodium.org/libsodium/releases/">https://download.libsodium.org/libsodium/releases/</a> and download <code>libsodium-1.0.18-stable-msvc.zip</code> or a newer version with the same suffix <code>msvc</code>. Then you will copy the <code>libsodium.dll</code> from <code>\libsodium\x64\Release\v142\dynamic\</code> to <code>C:\Windows\System32</code> and <code>C:\Windows\SysWOW64</code>. (For x86, <code>.\win32\*</code>)</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+          <category> devops </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> libsodium </tag>
+            
+            <tag> chacha20 </tag>
+            
+            <tag> salsa20 </tag>
+            
+            <tag> tutorial </tag>
+            
+            <tag> proxy </tag>
+            
+            <tag> shadowsocks </tag>
+            
+            <tag> windows </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Xtables-addon</title>
+      <link href="/2019/xtables-addon/"/>
+      <url>/2019/xtables-addon/</url>
+      
+        <content type="html"><![CDATA[<p>*Warning: Unfortunately, due to this is an old version of xaddon, it only works for kernel-devel, instead of kernel-ml-devel. And obviously, on CentOS you cannot install xtables-addon 3.x which requires iptables 1.6. So until now the latest kernel version it supports is 3.10.0-957.12.2.el7.x86_64. </p><h2 id="Checking-kernel"><a href="#Checking-kernel" class="headerlink" title="Checking kernel"></a>Checking kernel</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -r</span><br></pre></td></tr></table></figure><p>Make sure you are using kernel <code>3.10.0-957.12.2</code>, or it won’t work.</p><h2 id="Install-the-required-packages"><a href="#Install-the-required-packages" class="headerlink" title="Install the required packages."></a>Install the required packages.</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc gcc-c++ make automake unzip zip xz kernel-devel-`uname -r` wget unzip iptables-devel perl-Text-CSV_XS</span><br></pre></td></tr></table></figure><h2 id="Download-and-compile-xtables-addon"><a href="#Download-and-compile-xtables-addon" class="headerlink" title="Download and compile xtables-addon"></a>Download and compile xtables-addon</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wget http://ufpr.dl.sourceforge.net/project/xtables-addons/Xtables-addons/xtables-addons-2.14.tar.xz</span><br><span class="line">tar -xvf xtables-addons-2.14.tar.xz</span><br><span class="line">cd xtables-addons-2.14</span><br><span class="line">./configure</span><br><span class="line">sed -i &#x27;/xt_TARPIT.o$/s/^/#/&#x27; extensions/Kbuild</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure><p>Then, the key step, and the step I could not find in any other tutorial (The previous solution is outdated and could not be used)</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /usr/share/xt_geoip</span><br><span class="line">wget -q https://legacy-geoip-csv.ufficyo.com/Legacy-MaxMind-GeoIP-database.tar.gz -O - | tar -xvzf - -C /usr/share/xt_geoip</span><br></pre></td></tr></table></figure><p>Now you finished the setup! </p><p>Also let me show you how to use it. The format is:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -m geoip –src-cc country[,country…] –dst-cc country[,country…]</span><br></pre></td></tr></table></figure><p>The country uses two-letter ISO3166 code standard. For example:</p><p>Blocking all incoming traffic from China and India: <code>iptables -I INPUT -m geoip --src-cc IN,US -j DROP</code><br>Blocking all incoming traffic from countries except the US: <code>iptables -I INPUT -m geoip ! --src-cc US -j DROP</code></p><h2 id="Credits"><a href="#Credits" class="headerlink" title="Credits"></a>Credits</h2><p><a href="https://linoxide.com/linux-how-to/block-ips-countries-geoip-addons/">https://linoxide.com/linux-how-to/block-ips-countries-geoip-addons/</a><br><a href="https://legacy-geoip-csv.ufficyo.com/">https://legacy-geoip-csv.ufficyo.com/</a><br><a href="https://www.isthnew.com/archives/centos7-bbr.html">https://www.isthnew.com/archives/centos7-bbr.html</a><br><a href="https://documentacoes.wordpress.com/2018/04/03/install-geoip-iptables-module-centos-7/">https://documentacoes.wordpress.com/2018/04/03/install-geoip-iptables-module-centos-7/</a> </p>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+          <category> devops </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> iptables </tag>
+            
+            <tag> security </tag>
+            
+            <tag> xtables </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Blackmail</title>
+      <link href="/2019/blackmail/"/>
+      <url>/2019/blackmail/</url>
+      
+        <content type="html"><![CDATA[<p>It is a real story HAPPENED JUST 2 HOURS AGO.</p><p>It seems my working email was <strong>hacked</strong>.</p><p>The story begins with an unexpected email in my inbox of working email, with the sender to be myself.</p><p>In the email, the writer said: <em>I have started special program to the adult videos(porn) websites…… during you enjoy these great vids your computer was controlled by me</em> and claimed he was running keylogger(a kind of virus which records the input of keyboard) on my computer.</p><p>He also complimented me for having got an <em>interesting taste</em>. Hmm… And my camera is claimed to be hacked? Weird, my webcam can’t be working without turning on the red LED indicator.</p><p>The hacker demanded me to send him BTC worthing $1000 USD. Well, BTC price is still declining, why are you still asking for BTC instead of some other cryptocurrencies? I just don’t understand.</p><p>The first part could be right, I did watch porn vids online. Sometimes I may even register their accounts to get more member benefits. But I’m never so dumb to register with my working email.</p><p>And MOST importantly, he should never, never be able hack my working email: This address is just a forwarding address. So… how?</p><p>It gotta be a scam then. After examining the email, it turns out that the hacker sends me the mail by faking my address. <strong>The mail is not from an authenticated server</strong> - a line of alert reads. </p><p>Phew. So my taste will be safe, same for my wallet. Hooray! </p><p>Have fun and good luck!</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> security </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> hacking </tag>
+            
+            <tag> blackmail </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>How to identify your iPhone Model</title>
+      <link href="/2018/iphone-model/"/>
+      <url>/2018/iphone-model/</url>
+      
+        <content type="html"><![CDATA[<p>If you are about to buy a new iPhone online or just exploring your iPhone, you may find the Model (in Settings – General – About) is pretty confusing.</p><p>For example, the Model of your iPhone 6 you are referring to could be showing <strong>A1586</strong>(We call it <em>A-Number</em>) or <strong>MG472LL&#x2F;A</strong>(We call it  <em>SKU</em>). And you can click to switch between them. But, what does it mean?</p><h2 id="A-Number"><a href="#A-Number" class="headerlink" title="A-Number"></a>A-Number</h2><p>Take my iPhone 6 as an example. According to Apple.com, the A Number of an iPhone 6 could be one of these:</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>A1549</td><td>North America (<strong>SKU:</strong> MG4P2LL&#x2F;A*) or Verizon Locked(<strong>SKU:</strong> MG5X2LL&#x2F;A*)</td></tr><tr><td>A1586</td><td>Sprint Locked&#x2F;Global Unlocked (<strong>SKU:</strong> MG6A2LL&#x2F;A*)</td></tr><tr><td>A1589</td><td>China Mobile Locked</td></tr></tbody></table><p>As you can see, each “A Number” is unnecessarily corresponding to only one version of iPhone. But they share the same “generation” (iPhone 6). They are too vague to be used to identify the tech specs, sometime.</p><h2 id="SKU"><a href="#SKU" class="headerlink" title="SKU"></a>SKU</h2><p>The most informative parts are the head and the tail. Taking <strong>MG472LL&#x2F;A</strong> as an example…</p><table><thead><tr><th align="center">First Letter</th><th align="center">Product Type</th></tr></thead><tbody><tr><td align="center">M</td><td align="center">Retail</td></tr><tr><td align="center">F</td><td align="center">Refurbished</td></tr><tr><td align="center">N</td><td align="center">Replacement</td></tr><tr><td align="center">P</td><td align="center">Personalized (engraved)</td></tr></tbody></table><p>And the tail, <strong>LL&#x2F;A</strong>, tells us the region (discard the &#x2F;A part). </p><table><thead><tr><th align="center">Code</th><th align="center">Region</th></tr></thead><tbody><tr><td align="center">AB</td><td align="center">Egypt, Jordan, Saudi Arabia, United Arab Emirates</td></tr><tr><td align="center">B</td><td align="center">Ireland, UK, also used for some replacement units</td></tr><tr><td align="center">BR</td><td align="center">Brazil (Assembled in Brazil)</td></tr><tr><td align="center">BZ</td><td align="center">Brazil (Assembled in China)</td></tr><tr><td align="center">C</td><td align="center">Canada</td></tr><tr><td align="center">CL</td><td align="center">Canada</td></tr><tr><td align="center">CH</td><td align="center">China</td></tr><tr><td align="center">CZ</td><td align="center">Czech Republic</td></tr><tr><td align="center">D</td><td align="center">Germany</td></tr><tr><td align="center">DN</td><td align="center">Austria, Germany, Netherlands</td></tr><tr><td align="center">E</td><td align="center">Mexico</td></tr><tr><td align="center">EE</td><td align="center">Estonia</td></tr><tr><td align="center">FB</td><td align="center">France, Luxembourg</td></tr><tr><td align="center">FD</td><td align="center">Austria, Liechtenstein, Switzerland</td></tr><tr><td align="center">GR</td><td align="center">Greece</td></tr><tr><td align="center">HN</td><td align="center">India</td></tr><tr><td align="center">IP</td><td align="center">Italy</td></tr><tr><td align="center">HB</td><td align="center">Israel</td></tr><tr><td align="center">J</td><td align="center">Japan</td></tr><tr><td align="center">KH</td><td align="center">Korea</td></tr><tr><td align="center">KN</td><td align="center">Norway</td></tr><tr><td align="center">KS</td><td align="center">Finland, Sweden</td></tr><tr><td align="center">LA</td><td align="center">Colombia, Ecuador, El Salvador, Guatemala, Honduras, Peru</td></tr><tr><td align="center">LE</td><td align="center">Argentina</td></tr><tr><td align="center">LL</td><td align="center">USA, Canada, also used for some replacement units</td></tr><tr><td align="center">LZ</td><td align="center">Chile, Paraguay, Uruguay</td></tr><tr><td align="center">MG</td><td align="center">Hungary</td></tr><tr><td align="center">MO</td><td align="center">Macau, Hong Kong(?)</td></tr><tr><td align="center">MY</td><td align="center">Malaysia</td></tr><tr><td align="center">NF</td><td align="center">Belgium, France, Luxembourg</td></tr><tr><td align="center">PL</td><td align="center">Poland</td></tr><tr><td align="center">PO</td><td align="center">Portugal</td></tr><tr><td align="center">PP</td><td align="center">Philippines</td></tr><tr><td align="center">RO</td><td align="center">Romania</td></tr><tr><td align="center">RS</td><td align="center">Russia</td></tr><tr><td align="center">SL</td><td align="center">Slovakia</td></tr><tr><td align="center">SO</td><td align="center">South Africa</td></tr><tr><td align="center">T</td><td align="center">Italy</td></tr><tr><td align="center">TA</td><td align="center">Taiwan</td></tr><tr><td align="center">TU</td><td align="center">Turkey</td></tr><tr><td align="center">TY</td><td align="center">Italy</td></tr><tr><td align="center">VC</td><td align="center">Canada</td></tr><tr><td align="center">X</td><td align="center">Australia, New Zealand</td></tr><tr><td align="center">Y</td><td align="center">Spain</td></tr><tr><td align="center">ZA</td><td align="center">Singapore</td></tr><tr><td align="center">ZP</td><td align="center">Hong Kong, Macau</td></tr></tbody></table><p>The first 5 letters make up the version identifier, including the Generation, Storage Capacity option, and Color.</p><p>You can check the detailed table here: <a href="https://www.theiphonewiki.com/wiki/Models#iPhone">https://www.theiphonewiki.com/wiki/Models#iPhone</a></p><h2 id="Credits"><a href="#Credits" class="headerlink" title="Credits"></a>Credits</h2><h3 id="The-iPhone-Wiki"><a href="#The-iPhone-Wiki" class="headerlink" title="The iPhone Wiki"></a>The iPhone Wiki</h3><ul><li><a href="https://www.theiphonewiki.com/wiki/Models#iPhone">https://www.theiphonewiki.com/wiki/Models#iPhone</a></li><li><a href="https://www.theiphonewiki.com/wiki/Model_Regions">https://www.theiphonewiki.com/wiki/Model_Regions</a></li></ul><h3 id="EveryMac-com"><a href="#EveryMac-com" class="headerlink" title="EveryMac.com"></a>EveryMac.com</h3><ul><li><a href="https://everymac.com/ultimate-mac-lookup/">https://everymac.com/ultimate-mac-lookup/</a></li></ul><h3 id="Macworld"><a href="#Macworld" class="headerlink" title="Macworld"></a>Macworld</h3><ul><li><a href="https://www.macworld.co.uk/how-to/iphone/what-iphone-do-i-have-3632721/">https://www.macworld.co.uk/how-to/iphone/what-iphone-do-i-have-3632721/</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> iphone </tag>
+            
+            <tag> apple </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Install libsodium on CentOS 7</title>
+      <link href="/2017/chacha20-centos7/"/>
+      <url>/2017/chacha20-centos7/</url>
+      
+        <content type="html"><![CDATA[<p>CHACHA20 is a cipher based on Salsa20, a famous stream cipher. It is included in the libsodium. </p><h3 id="Install-dependencies"><a href="#Install-dependencies" class="headerlink" title="Install dependencies"></a>Install dependencies</h3><p>yum install m2crypto gcc -y</p><h3 id="Download-and-Install-libsodium"><a href="#Download-and-Install-libsodium" class="headerlink" title="Download and Install libsodium"></a>Download and Install libsodium</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz </span><br><span class="line">tar zvxf LATEST.tar.gz </span><br><span class="line">cd libsodium-* </span><br><span class="line">./configure </span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure><h3 id="Add-the-file-path-to-environment-variable"><a href="#Add-the-file-path-to-environment-variable" class="headerlink" title="Add the file path to environment variable"></a>Add the file path to environment variable</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;/usr/local/lib&quot; &gt;&gt; /etc/ld.so.conf</span><br><span class="line">ldconfig</span><br></pre></td></tr></table></figure><h3 id="Credit"><a href="#Credit" class="headerlink" title="Credit"></a>Credit</h3><p>D0zingcat</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+          <category> devops </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> libsodium </tag>
+            
+            <tag> chacha20 </tag>
+            
+            <tag> salsa20 </tag>
+            
+            <tag> tutorial </tag>
+            
+            <tag> linux </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Shadowsocks-manyuser on CentOS 7</title>
+      <link href="/2016/shadowsocks-manyuser-centos7/"/>
+      <url>/2016/shadowsocks-manyuser-centos7/</url>
+      
+        <content type="html"><![CDATA[<p>Shadowsocks was widely known as a powerful proxy protocol, and Shadowsocks-manyuser is one of the ports of its server-side project.</p><p>Now, please allow me to introduce you the setting-up process of the Shadowsocks-manyuser on CentOS. For other Linux distro, please make the necessary changes.</p><h2 id="Clear-your-YUM-and-update-your-repo-cache"><a href="#Clear-your-YUM-and-update-your-repo-cache" class="headerlink" title="Clear your YUM and update your repo cache"></a>Clear your YUM and update your repo cache</h2><p>Run bash command under root user to refresh the yum cache :</p><p>yum clean all &amp;&amp; yum update -y</p><h2 id="Install-the-dependencies"><a href="#Install-the-dependencies" class="headerlink" title="Install the dependencies"></a>Install the dependencies</h2><h3 id="Yum-part"><a href="#Yum-part" class="headerlink" title="Yum part"></a>Yum part</h3><p>Run bash command:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install git m2crypto python -y</span><br></pre></td></tr></table></figure><p>After that, run</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure><p>If you can see the version printed, your installation of Git is successful.</p><h3 id="Install-pip"><a href="#Install-pip" class="headerlink" title="Install pip"></a>Install pip</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://bootstrap.pypa.io/get-pip.py python get-pip.py</span><br></pre></td></tr></table></figure><h3 id="Install-cymysql-with-pip"><a href="#Install-cymysql-with-pip" class="headerlink" title="Install cymysql with pip"></a>Install cymysql with pip</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pyparsing pip install cymysql</span><br></pre></td></tr></table></figure><h2 id="Install-Shadowsocks-manyuser"><a href="#Install-Shadowsocks-manyuser" class="headerlink" title="Install Shadowsocks-manyuser"></a>Install Shadowsocks-manyuser</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone -b manyuser https://github.com/mengskysama/shadowsocks-rm.git</span><br></pre></td></tr></table></figure><p>Then Import the SQL files into your user authentication database. You can find it in the shadowsocks-rm&#x2F;shadowsocks&#x2F;shadowsocks.sql</p><h3 id="Configure-your-Shadowsocks-manyuser-instance"><a href="#Configure-your-Shadowsocks-manyuser-instance" class="headerlink" title="Configure your Shadowsocks-manyuser instance"></a>Configure your Shadowsocks-manyuser instance</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd shadowsocks-rm/shadowsocks/ vi config.py</span><br></pre></td></tr></table></figure><p>Be careful to modify the config to match your connection details to your database server. Otherwise, the server will crash. And remember to modify the encrypt method and the binding IP if needed.</p><h2 id="Setup-Auto-startup-Optional"><a href="#Setup-Auto-startup-Optional" class="headerlink" title="Setup Auto-startup [Optional]"></a>Setup Auto-startup [Optional]</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;nohup /usr/bin/python /home/gaukas/shadowsocks-rm/shadowsocks/servers.py&quot; &gt;&gt; /etc/rc.local</span><br></pre></td></tr></table></figure><p>(The path needs to be modified to match your Python and your shadowsocks server directory.)</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+          <category> devops </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> tutorial </tag>
+            
+            <tag> linux </tag>
+            
+            <tag> proxy </tag>
+            
+            <tag> shadowsocks </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>
