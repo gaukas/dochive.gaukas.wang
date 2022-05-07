@@ -107,3 +107,11 @@ theme: leedom
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: ''
+
+sitemap:
+  path:
+    - sitemap.xml
+    - sitemap.txt
+  rel: false
+  tags: false
+  categories: false
