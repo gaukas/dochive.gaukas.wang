@@ -3,8 +3,8 @@ title: How to identify your iPhone Model
 categories:
 - tutorial
 tags: 
+- apple
 - iphone
-- apple 
 date: 12/26/2018 14:33
 ---
 If you are about to buy a new iPhone online or just exploring your iPhone, you may find the Model (in Settings – General – About) is pretty confusing.

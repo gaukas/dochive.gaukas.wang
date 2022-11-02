@@ -4,10 +4,10 @@ categories:
 - reports
 - security
 tags: 
-- china
-- tls
-- proxy
 - censorship 
+- china
+- proxy
+- tls
 date: 07/28/2021 18:50
 ---
 _Prev title: How China Detects and Blocks TLS Proxies_
@@ -57,21 +57,21 @@ Thus we have confirmed that the attack is not discriminating TLS proxy traffic a
 In addition we evaluated the potential impact of other fingerprintable TLS factors on TLS handshake successful rates, among many target hosts running TLS proxy/web servers.
 
 ### TLS ClientHello fingerprint
-| ![clienthello](/images/china-tls/clienthello.png) |
+| ![clienthello](/images/china-tls-proxy/clienthello.png) |
 | :--: |
 | Fig 1. various targets(hosts) with various popular TLS ClientHello Messages |
 
 The data does not show an indication of ClientHello-fingerprint-based discrimination.
 
 ### Negotiated ALPN
-| ![alpn](/images/china-tls/alpn.png) |
+| ![alpn](/images/china-tls-proxy/alpn.png) |
 | :--: |
 | Fig 2. various negotiatede ALPN with various popular TLS ClientHello Messages |
 
 The data does not show an indication of negotiated-ALPN-based discrimination.
 
 ### SNI
-| ![alpn](/images/china-tls/sni.png) |
+| ![alpn](/images/china-tls-proxy/sni.png) |
 | :--: |
 | Fig 3. various SNI/Hostnames |
 

@@ -4,12 +4,11 @@ categories:
 - tutorial
 - devops
 tags: 
+- cryptography
 - fido2
-- ssh
-- ed25519
-- ecdsa
-- yubikey 
 - linux
+- ssh
+- yubikey
 date: 05/04/2022 21:08
 ---
 ## Requirements

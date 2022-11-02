@@ -4,13 +4,12 @@
 
 # Site
 title: DocHive by Gaukas
-subtitle: 'Proudly powered by Hexo'
-description: 'DocHive = Documentation Archive'
+subtitle: 'The online archive done right'
+description: 'DocHive is used to archive articles with important information. Including critical incident records, hard-to-find tutorials, and other highly valuable articles.'
 keywords:
 - 'DocHive'
 - 'Documentation'
 - 'Archive'
-- 'Gaukas'
 author: Gaukas Wang
 language: en
 timezone: ''

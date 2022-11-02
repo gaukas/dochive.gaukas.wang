@@ -37,7 +37,7 @@ link:
   -
     name: github
     icon: github
-    path: https://github.com/Gaukas
+    path: https://github.com/gaukas
     target: _blank
   -
     name: email
@@ -46,9 +46,8 @@ link:
 
 # 页脚信息
 footer:
-  -
-    name: Copyright © Gaukas Wang under <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
-    path: https://github.com/leedom92/hexo-theme-leedom
+  - name: Copyright © Gaukas Wang under <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>, built with <a target="_blank" href="https://github.com/leedom92/hexo-theme-leedom">Leedom</a> on <a target="_blank" href="https://github.com/gaukas/dochive.gaukas.wang">GitHub</a>
+    path: https://gaukas.wang/
 
 # 文章搜索
 search:
