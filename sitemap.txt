@@ -1,10 +1,7 @@
-https://dochive.gaukas.wang/2019/blackmail/
 https://dochive.gaukas.wang/2017/chacha20-centos7/
 https://dochive.gaukas.wang/2021/china-tls-proxy-2021/
 https://dochive.gaukas.wang/2018/iphone-model/
-https://dochive.gaukas.wang/2016/shadowsocks-manyuser-centos7/
-https://dochive.gaukas.wang/2019/shadowsocks-manyuser-centos8/
-https://dochive.gaukas.wang/2019/shadowsocks-manyuser-windows-server-2016/
+https://dochive.gaukas.wang/2022/smb-guest-windows/
 https://dochive.gaukas.wang/2022/ssh-fido2/
 https://dochive.gaukas.wang/2019/xtables-addon/
 https://dochive.gaukas.wang/

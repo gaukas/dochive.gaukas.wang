@@ -2,18 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://dochive.gaukas.wang/2019/blackmail/</loc>
-    
-    <lastmod>2022-05-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://dochive.gaukas.wang/2017/chacha20-centos7/</loc>
     
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-11-02</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -22,7 +13,7 @@
   <url>
     <loc>https://dochive.gaukas.wang/2021/china-tls-proxy-2021/</loc>
     
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-11-02</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -31,34 +22,16 @@
   <url>
     <loc>https://dochive.gaukas.wang/2018/iphone-model/</loc>
     
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-11-02</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://dochive.gaukas.wang/2016/shadowsocks-manyuser-centos7/</loc>
+    <loc>https://dochive.gaukas.wang/2022/smb-guest-windows/</loc>
     
-    <lastmod>2022-05-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://dochive.gaukas.wang/2019/shadowsocks-manyuser-centos8/</loc>
-    
-    <lastmod>2022-05-07</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://dochive.gaukas.wang/2019/shadowsocks-manyuser-windows-server-2016/</loc>
-    
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-11-02</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -67,7 +40,7 @@
   <url>
     <loc>https://dochive.gaukas.wang/2022/ssh-fido2/</loc>
     
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-11-02</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -76,7 +49,7 @@
   <url>
     <loc>https://dochive.gaukas.wang/2019/xtables-addon/</loc>
     
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-11-02</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -85,7 +58,7 @@
 
   <url>
     <loc>https://dochive.gaukas.wang/</loc>
-    <lastmod>2022-05-07</lastmod>
+    <lastmod>2022-11-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>

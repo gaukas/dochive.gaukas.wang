@@ -4,14 +4,14 @@
   <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="keywords" content="DocHive,Documentation,Archive,Gaukas" />
+  <meta name="keywords" content="DocHive,Documentation,Archive" />
   <meta name="author" content="Gaukas Wang" />
-  <meta name="description" content="DocHive = Documentation Archive" />
+  <meta name="description" content="DocHive is used to archive articles with important information. Including critical incident records, hard-to-find tutorials, and other highly valuable articles." />
   
   
   <title>
     
-      archive_a: 2019/3 
+      Setup Samba file sharing access for Windows guests 
       
       
     
@@ -33,6 +33,10 @@
 
 
   
+
+  
+    
+<link rel="stylesheet" href="/css/post.css">
 
   
 
@@ -62,7 +66,7 @@
       <i class="iconfont icon-bookmark"></i>
     </a>
   
-    <a title="github" target="_blank" href="https://github.com/Gaukas">
+    <a title="github" target="_blank" href="https://github.com/gaukas">
       <i class="iconfont icon-github"></i>
     </a>
   
@@ -74,163 +78,76 @@
 
 
       <div class="main">
-        <!-- 归档页，展示本站所有文章，按照年份降序归类，url形式：https://yoursite/archives/ -->
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
 
-<!-- last: 按年份把文章分组，当前遍历到的年份 -->
-<!-- now: 当前遍历到的文章的发布年份 -->
+<!-- LaTex Display -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
 
-<div class="container archives">
-  <div class="post-list">
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2022</span>
-          </h2>
-        </div>
-      
-      <div class="post-item" title="Secure your SSH key with a FIDO2 Authenticator">
-        <div class="time-m-d">05-04</div>
-        <div class="title">
-          <a href="/2022/ssh-fido2/">
-            
-              <span>Secure your SSH key with a FIDO2 Authenticator</span>
-            
-          </a>
-        </div>
-      </div>
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2021</span>
-          </h2>
-        </div>
-      
-      <div class="post-item" title="How China Telecom incapacitated TLS Proxies">
-        <div class="time-m-d">07-28</div>
-        <div class="title">
-          <a href="/2021/china-tls-proxy-2021/">
-            
-              <span>How China Telecom incapacitated TLS Proxies</span>
-            
-          </a>
-        </div>
-      </div>
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2019</span>
-          </h2>
-        </div>
-      
-      <div class="post-item" title="Shadowsocks-manyuser on CentOS 8">
-        <div class="time-m-d">11-03</div>
-        <div class="title">
-          <a href="/2019/shadowsocks-manyuser-centos8/">
-            
-              <span>Shadowsocks-manyuser on CentOS 8</span>
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="Shadowsocks-Manyuser on Windows Server 2016">
-        <div class="time-m-d">06-19</div>
-        <div class="title">
-          <a href="/2019/shadowsocks-manyuser-windows-server-2016/">
-            
-              <span>Shadowsocks-Manyuser on Windows Server 2016</span>
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="Xtables-addon">
-        <div class="time-m-d">06-16</div>
-        <div class="title">
-          <a href="/2019/xtables-addon/">
-            
-              <span>Xtables-addon</span>
-            
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="Blackmail">
-        <div class="time-m-d">03-20</div>
-        <div class="title">
-          <a href="/2019/blackmail/">
-            
-              <span>Blackmail</span>
-            
-          </a>
-        </div>
-      </div>
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2018</span>
-          </h2>
-        </div>
-      
-      <div class="post-item" title="How to identify your iPhone Model">
-        <div class="time-m-d">12-26</div>
-        <div class="title">
-          <a href="/2018/iphone-model/">
-            
-              <span>How to identify your iPhone Model</span>
-            
-          </a>
-        </div>
-      </div>
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2017</span>
-          </h2>
-        </div>
-      
-      <div class="post-item" title="Install libsodium on CentOS 7">
-        <div class="time-m-d">10-29</div>
-        <div class="title">
-          <a href="/2017/chacha20-centos7/">
-            
-              <span>Install libsodium on CentOS 7</span>
-            
-          </a>
-        </div>
-      </div>
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2016</span>
-          </h2>
-        </div>
-      
-      <div class="post-item" title="Shadowsocks-manyuser on CentOS 7">
-        <div class="time-m-d">07-30</div>
-        <div class="title">
-          <a href="/2016/shadowsocks-manyuser-centos7/">
-            
-              <span>Shadowsocks-manyuser on CentOS 7</span>
-            
-          </a>
-        </div>
-      </div>
-    
+<div class="post">
+  <h3 class="date">
+    Nov 01, 2022
+  </h3>
+  <h1>
+    Setup Samba file sharing access for Windows guests
+  </h1>
+  <div class="content markdown-body">
+    <h2 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h2><ul>
+<li><strong>Samba</strong> on a Linux server (I used a Raspberry Pi 4 running Raspbian)</li>
+<li>A client machine running Windows 10 or later (may work on older versions)</li>
+</ul>
+<p>All these hustles are due to the fact that Windows 10 by default blocks guest access to Samba file sharing at some point. <em>THANKS YOU MICROSOFT!</em></p>
+<h2 id="Setup-Samba-Server"><a href="#Setup-Samba-Server" class="headerlink" title="Setup Samba Server"></a>Setup Samba Server</h2><h3 id="Install-and-configure-Samba"><a href="#Install-and-configure-Samba" class="headerlink" title="Install and configure Samba"></a>Install and configure Samba</h3><p>For a general setup tutorial, please refer to <a target="_blank" rel="noopener" href="https://ubuntu.com/tutorials/install-and-configure-samba#1-overview">this tutorial</a> from Ubuntu, written by <em>Aden Padilla</em>.</p>
+<h3 id="A-config-file-enabling-guest-access"><a href="#A-config-file-enabling-guest-access" class="headerlink" title="A config file enabling guest access"></a>A config file enabling guest access</h3><p>I used it only within my LAN, so I didn’t bother with any security and allowing all possible access&#x2F;privileges. An exposed Samba server MUST NOT use this config file.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">        workgroup = WORKGROUP</span><br><span class="line">        server string = RPi %v</span><br><span class="line">        netbios name = debian</span><br><span class="line">        follow symlinks = yes</span><br><span class="line">        wide links = yes</span><br><span class="line">        unix extensions = no</span><br><span class="line">        security = user</span><br><span class="line">        map to guest = bad user</span><br><span class="line">        dns proxy = no</span><br><span class="line">        min protocol = NT1</span><br><span class="line">        server signing = mandatory</span><br><span class="line">        ## All Share Permissions ##</span><br><span class="line">        read only = no</span><br><span class="line">        writable = yes</span><br><span class="line">        browseable = yes</span><br><span class="line">        public = yes</span><br><span class="line">        available = yes</span><br><span class="line">        guest ok = yes</span><br><span class="line">        hosts allow = 10.0.0.0/8 # that&#x27;s my LAN subnet</span><br><span class="line">        hosts deny = 0.0.0.0/0 # block everything else for security</span><br><span class="line"></span><br><span class="line">[share]</span><br><span class="line">        description = DEN Guest Share</span><br><span class="line">        path = /home/shared</span><br><span class="line">        force user = gaukas # the user that owns the shared folder</span><br><span class="line">        guest account = gaukas </span><br></pre></td></tr></table></figure>
+
+<p>Once you setup Samba with the config file above, you are expected to be able to access the shared folder from any Samba client as a guest user.</p>
+<h2 id="However…"><a href="#However…" class="headerlink" title="However…"></a>However…</h2><p>I got an error. </p>
+<table>
+<thead>
+<tr>
+<th align="center"><img src="/images/smb-guest-windows/network_credentials.jpg" alt="credentials"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Prompted to enter credentials</td>
+</tr>
+</tbody></table>
+<p>With the setup above, when I connect to the SMB server with my Windows machine, it still prompts me to provide credentials. </p>
+<p>I tried many different combinations of configurations but non of them worked. In the end, I ran Wireshark and found out that it is my Windows machine breaking the connection by sending RST, after the server sends a SMB response with guest access. </p>
+<p>Aha. So, it is Windows that is blocking guest access.</p>
+<h2 id="Fix"><a href="#Fix" class="headerlink" title="Fix"></a>Fix</h2><p><em>source: <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/guest-access-in-smb2-is-disabled-by-default">https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/guest-access-in-smb2-is-disabled-by-default</a></em></p>
+<p>So it turns out that Guest access in SMB2 and SMB3 is disabled by default in Windows. </p>
+<p>To disable such &#96;&#96;protection’’:</p>
+<ul>
+<li>Run <code>gpedit.msc</code> to open the <strong>Local Group Policy Editor</strong>.</li>
+<li>Select <strong>Computer Configuration &gt; Administrative Templates &gt; Network &gt; Lanman Workstation</strong>.</li>
+<li>Set <strong>Enable insecure guest logons</strong> to <strong>Enabled</strong>.</li>
+</ul>
+<p>And boom, we are done here. You can now access the shared folder as a guest user from your Windows machine.</p>
+
   </div>
+  
+    
+      <a id="older" class="blog-nav" href="/2022/ssh-fido2/">OLDER&nbsp;&gt;</a>
+      
+        
+            
 </div>
-
         <div class="footer">
   
     <div class="footer-more">
       
-        <a target="_blank" rel="noopener" href="https://github.com/leedom92/hexo-theme-leedom">Copyright © Gaukas Wang under <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a></a>
+        <a target="_blank" rel="noopener" href="https://gaukas.wang/">Copyright © Gaukas Wang under <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>, built with <a target="_blank" href="https://github.com/leedom92/hexo-theme-leedom">Leedom</a> on <a target="_blank" href="https://github.com/gaukas/dochive.gaukas.wang">GitHub</a></a>
         
     </div>
   
