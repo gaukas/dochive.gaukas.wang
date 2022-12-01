@@ -47,12 +47,12 @@ I used it only within my LAN, so I didn't bother with any security and allowing 
         guest ok = yes
         hosts allow = 10.0.0.0/8 # that's my LAN subnet
         hosts deny = 0.0.0.0/0 # block everything else for security
+        force user = gaukas # the user that owns the shared folder
+        guest account = gaukas 
 
 [share]
         description = DEN Guest Share
-        path = /home/shared
-        force user = gaukas # the user that owns the shared folder
-        guest account = gaukas 
+        path = /mnt/hdd
 ```
 
 Once you setup Samba with the config file above, you are expected to be able to access the shared folder from any Samba client as a guest user.
@@ -81,3 +81,19 @@ To disable such ``protection'':
 - Set **Enable insecure guest logons** to **Enabled**.
 
 And boom, we are done here. You can now access the shared folder as a guest user from your Windows machine.
+
+## Bonus
+
+`/etc/fstab` I used to mount my NTFS HDD on my Raspberry Pi. 
+
+(Note: before mounting, the mount point MUST have been created and `chmod 777`'d)
+
+```
+UUID=4CBEA6D042C988DA /mnt/hdd ntfs-3g defaults,nofail 0 0
+```
+
+`/etc/fstab` I used to mount the shared folder on Linux
+
+```
+//10.0.0.5/share/gaukas/project /mnt/project/ cifs rw,guest,vers=1.0,nofail,iocharset=utf8,file_mode=0777,dir_mode=0777 0 0
+```
