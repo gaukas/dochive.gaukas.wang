@@ -8,6 +8,7 @@ tags:
 - fido2
 - linux
 - ssh
+- windows
 - yubikey
 date: 05/04/2022 21:08
 ---
