@@ -201,11 +201,11 @@ Remember to restart your terminal!
 
 And then `go test` finally passes. 
 
-#### Side note
-The `wasmtime-go` is released with only `libwasmtime.a` not even any dll. However when I put only `libwasmtime.a` in `wasmtime-go/build/windows-x86_64`, `go test` will pass but produce multiple warnings including 
+#### Side note: release with only `libwasmtime.a`
+The `wasmtime-go` is released with only `libwasmtime.a` not even any dll. However when I first put only `libwasmtime.a` in `wasmtime-go/build/windows-x86_64`, `go test` will pass but produce multiple warnings including 
 
 ```
 corrupt .drectve at end of def file
 ```
 
-But having all three output just as the Pull Request CI worked well.
+Haven't figured out why. But I tried `cargo clean` then rebuild, then it works for me to have only `libwasmtime.a` in `wasmtime-go/build/windows-x86_64`.
