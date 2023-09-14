@@ -208,4 +208,4 @@ The `wasmtime-go` is released with only `libwasmtime.a` not even any dll. Howeve
 corrupt .drectve at end of def file
 ```
 
-Haven't figured out why. But I tried `cargo clean` then rebuild, then it works for me to have only `libwasmtime.a` in `wasmtime-go/build/windows-x86_64`.
+Haven't figured out why yet. It seems to be an issue with the linker for CGO. 
