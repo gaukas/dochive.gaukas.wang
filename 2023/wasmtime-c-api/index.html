@@ -182,10 +182,10 @@
 <p>WHY? Okay, it turns out the <code>wasmtime.dll</code> we compiled cannot be found by <code>wasmtime-go</code>. Adding the path to <code>wasmtime.dll</code> to <code>PATH</code> environment variable solves the problem.</p>
 <p>Remember to restart your terminal! </p>
 <p>And then <code>go test</code> finally passes. </p>
-<h4 id="Side-note"><a href="#Side-note" class="headerlink" title="Side note"></a>Side note</h4><p>The <code>wasmtime-go</code> is released with only <code>libwasmtime.a</code> not even any dll. However when I put only <code>libwasmtime.a</code> in <code>wasmtime-go/build/windows-x86_64</code>, <code>go test</code> will pass but produce multiple warnings including </p>
+<h4 id="Side-note-release-with-only-libwasmtime-a"><a href="#Side-note-release-with-only-libwasmtime-a" class="headerlink" title="Side note: release with only libwasmtime.a"></a>Side note: release with only <code>libwasmtime.a</code></h4><p>The <code>wasmtime-go</code> is released with only <code>libwasmtime.a</code> not even any dll. However when I first put only <code>libwasmtime.a</code> in <code>wasmtime-go/build/windows-x86_64</code>, <code>go test</code> will pass but produce multiple warnings including </p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">corrupt .drectve at end of def file</span><br></pre></td></tr></table></figure>
 
-<p>But having all three output just as the Pull Request CI worked well.</p>
+<p>Haven’t figured out why. But I tried <code>cargo clean</code> then rebuild, then it works for me to have only <code>libwasmtime.a</code> in <code>wasmtime-go/build/windows-x86_64</code>.</p>
 
   </div>
   
