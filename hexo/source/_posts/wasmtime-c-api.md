@@ -6,7 +6,6 @@ categories:
 tags: 
 - linux
 - rust
-- ssh
 - windows
 - wasmtime
 - webassembly
