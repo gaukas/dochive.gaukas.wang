@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>Compile Rust library to Android targets</title>
+      <link href="/2023/compile-rust-lib-to-android/"/>
+      <url>/2023/compile-rust-lib-to-android/</url>
+      
+        <content type="html"><![CDATA[<p>I noticed there was no good tutorial online about how to compile Rust library to Android target. So here’s one after a few hours of struggling.</p><h2 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h2><ul><li><strong>cargo</strong></li><li><strong>rustc</strong></li><li>Android NDK</li></ul><h2 id="Download-Android-NDK"><a href="#Download-Android-NDK" class="headerlink" title="Download Android NDK"></a>Download Android NDK</h2><p>To start with, Android NDK is required. It could be downloaded from here: <a href="https://developer.android.com/ndk/downloads">https://developer.android.com/ndk/downloads</a></p><p>We are going to show the steps for Linux in this tutorial.  </p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip</span><br><span class="line">unzip android-ndk-r26b-linux.zip</span><br></pre></td></tr></table></figure><p>To compile Rust code into Android targets, we need the toolchain shipped with Android NDK located at <code>android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin</code>. This directory should be added to <code>PATH</code> environment variable.</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/path/to/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin</span><br></pre></td></tr></table></figure><h2 id="Compile-Rust-Library"><a href="#Compile-Rust-Library" class="headerlink" title="Compile Rust Library"></a>Compile Rust Library</h2><p>To compile Rust library to Android, we need two things from the toolchain: <code>ar</code> and <code>clang</code>. Where <code>ar</code> is target architecture&#x2F;version-independent and <code>clang</code> is architecture&#x2F;version-dependent.</p><p>Take <code>aarch64</code> as an example, Rust will try to run <code>aarch64-linux-android-ar</code> and <code>aarch64-linux-android-clang</code> to compile the library. So we need to make sure these two commands are available in <code>PATH</code>. From the Android NDK, we can find no <code>aarch64-linux-android-ar</code> but only <code>llvm-ar</code>. So we need to create a soft link to <code>llvm-ar</code> or copy it to <code>aarch64-linux-android-ar</code>.</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> /path/to/llvm-ar /path/to/aarch64-linux-android-ar</span><br></pre></td></tr></table></figure><p>In terms of the <code>clang</code>, we can specify it in <code>~/.cargo/config.toml</code>. The content of the file should be like this:</p><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[target.aarch64-linux-android]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;aarch64-linux-android34-clang&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[target.x86_64-linux-android]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;x86_64-linux-android34-clang&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[target.i686-linux-android]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;i686-linux-android34-clang&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[target.armv7a-linux-androideabi]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;armv7a-linux-androideabi34-clang&quot;</span></span><br></pre></td></tr></table></figure><p>There’s one more thing to do before we could compile the library: we need to add the target to Rust. For example, if we want to compile the library to <code>aarch64-linux-android</code>, we need to run the following command:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rustup target add aarch64-linux-android</span><br></pre></td></tr></table></figure><p>Now we are ready to compile the library. The command is as simple as:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build --target=aarch64-linux-android --release --manifest-path /path/to/Cargo.toml</span><br></pre></td></tr></table></figure><p>And it should work magically!</p><h2 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h2><h3 id="error-occurred-Command-“aarch64-linux-android-clang”-…-Permission-denied"><a href="#error-occurred-Command-“aarch64-linux-android-clang”-…-Permission-denied" class="headerlink" title="error occurred: Command “aarch64-linux-android-clang” … Permission denied"></a>error occurred: Command “aarch64-linux-android-clang” … Permission denied</h3><p>Basically it says it cannot run <code>aarch64-linux-android-clang</code>. You might want to double check you specified the correct linker and it is in <code>PATH</code>.</p><h3 id="error-occurred-Command-“aarch64-linux-android-ar”-…-Permission-denied"><a href="#error-occurred-Command-“aarch64-linux-android-ar”-…-Permission-denied" class="headerlink" title="error occurred: Command “aarch64-linux-android-ar” … Permission denied"></a>error occurred: Command “aarch64-linux-android-ar” … Permission denied</h3><p>Basically it says it cannot run <code>aarch64-linux-android-ar</code>. You might want to double check you copied <code>llvm-ar</code> to <code>aarch64-linux-android-ar</code> and it is in <code>PATH</code>.</p><p>As of why they are <code>Permission denied</code> not <code>Command not found</code>, I have no idea. </p>]]></content>
+      
+      
+      <categories>
+          
+          <category> tutorial </category>
+          
+          <category> programming </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> rust </tag>
+            
+            <tag> android </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Develop and test wasmtime C API with wasmtime-go locally</title>
       <link href="/2023/wasmtime-c-api/"/>
       <url>/2023/wasmtime-c-api/</url>
@@ -24,11 +55,9 @@
             
             <tag> linux </tag>
             
-            <tag> windows </tag>
-            
-            <tag> ssh </tag>
-            
             <tag> rust </tag>
+            
+            <tag> windows </tag>
             
             <tag> wasmtime </tag>
             

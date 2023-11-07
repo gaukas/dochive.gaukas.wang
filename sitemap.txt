@@ -1,5 +1,6 @@
 https://dochive.gaukas.wang/2017/chacha20-centos7/
 https://dochive.gaukas.wang/2021/china-tls-proxy-2021/
+https://dochive.gaukas.wang/2023/compile-rust-lib-to-android/
 https://dochive.gaukas.wang/2018/iphone-model/
 https://dochive.gaukas.wang/2022/smb-guest-windows/
 https://dochive.gaukas.wang/2022/ssh-fido2/
