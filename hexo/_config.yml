@@ -109,8 +109,8 @@ deploy:
 
 sitemap:
   path:
-    - sitemap.xml
     - sitemap.txt
+    # - sitemap.xml
   rel: false
   tags: false
   categories: false
