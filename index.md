@@ -1,3 +1,9 @@
+---
+title: Home
+layout: home
+nav_order: 1
+---
+
 # DocHive
 
 DocHive, meaning "Document Hive", is a collection of documents, tutorials, and other resources. It is maintained by [Gaukas Wang](https://gaukas.wang) as a personal knowledge base.

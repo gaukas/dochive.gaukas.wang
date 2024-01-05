@@ -1,0 +1,39 @@
+title: DocHive
+email: i@gaukas.wang
+description: >- # this means to ignore newlines until "baseurl:"
+  DocHive is used to archive documentations with important information, 
+  including critical incident records, niche software tutorials, and 
+  other non-trivial documentations.
+theme: just-the-docs
+url: "dochive.gaukas.wang" # the base hostname & protocol for your site, e.g. http://example.com
+
+favicon_ico: "/assets/images/favicon.ico"
+
+exclude:
+  - LICENSE
+  - README.md
+
+aux_links:
+  Author: "https://gaukas.wang"
+
+# External navigation links
+nav_external_links:
+  - title: DocHive on GitHub
+    url: https://github.com/gaukas/dochive.gaukas.wang
+
+callouts_level: quiet # or loud
+callouts:
+  highlight:
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red
