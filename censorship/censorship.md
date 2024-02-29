@@ -3,7 +3,7 @@ layout: default
 title: Censorship
 nav_order: 2
 has_children: true
-permalink: /docs/censorship
+permalink: /censorship
 ---
 
 # Censorship

@@ -3,7 +3,7 @@ layout: default
 title: Rust
 nav_order: 5
 has_children: true
-permalink: /docs/rust
+permalink: /rust
 ---
 
 # Rust
