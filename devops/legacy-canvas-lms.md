@@ -13,7 +13,7 @@ This tutorial is about how to set up a specific older version of Canvas LMS made
 {: .warning }
 > A huge problem of Canvas's repository is that the tags are almost always unbuildable. Only a few tags can eventually be built into a Canvas instance that does the job. Another problem is with the wiki comes with the repository, where dependencies are not version-pinned. 
 
-So for this guide, we are going to use a specific tag that is known to work: `release/2022-01-19.127`. Alternatively, `release/2021-10-13.36` is also a tag with a working copy of Canvas that I have found.
+So for this guide, we are going to use a specific tag that is known to work: `release/2022-01-19.127`. Alternatively, `release/2021-10-13.36` is also a tag with a working copy of Canvas that I have found. Note that only the later (the Oct 2021 one) is vulnerable to CVE-2021-36539. Apparently the patch has been developed before Jan 2022, and deployed to the hosted Canvas much later than that. 
 
 ## Prerequisites
 
