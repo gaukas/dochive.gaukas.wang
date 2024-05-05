@@ -2,7 +2,7 @@
 layout: default
 title: Setup Samba file sharing access for Windows guests
 parent: DevOps
-nav_order: 2
+# nav_order: 2
 ---
 
 # Setup Samba file sharing access for Windows guests

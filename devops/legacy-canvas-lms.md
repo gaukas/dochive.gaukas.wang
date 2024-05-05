@@ -2,7 +2,7 @@
 layout: default
 title: Setup legacy version of Instructure Canvas LMS on Ubuntu 20.04
 parent: DevOps
-nav_order: 1
+# nav_order: 1
 ---
 
 # Setup legacy version Instructure Canvas LMS on Ubuntu 20.04
